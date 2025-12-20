@@ -675,32 +675,22 @@ void TabletColumn::init_from_pb(const ColumnPB& column) {
     // Parse column-level compression type
     if (column.has_compression_type()) {
         std::string compression_type_str = column.compression_type();
-        segment_v2::CompressionTypePB compression_type;
         // Convert string to CompressionTypePB enum
-        bool parse_success = false;
-        if (compression_type_str == "NO_COMPRESSION" || compression_type_str == "NO_COMPRESSION") {
+        if (compression_type_str == "NO_COMPRESSION") {
             _compression_type = segment_v2::NO_COMPRESSION;
-            parse_success = true;
         } else if (compression_type_str == "SNAPPY") {
             _compression_type = segment_v2::SNAPPY;
-            parse_success = true;
         } else if (compression_type_str == "LZ4") {
             _compression_type = segment_v2::LZ4;
-            parse_success = true;
         } else if (compression_type_str == "LZ4F") {
             _compression_type = segment_v2::LZ4F;
-            parse_success = true;
         } else if (compression_type_str == "ZLIB") {
             _compression_type = segment_v2::ZLIB;
-            parse_success = true;
         } else if (compression_type_str == "ZSTD") {
             _compression_type = segment_v2::ZSTD;
-            parse_success = true;
         } else if (compression_type_str == "LZ4HC") {
             _compression_type = segment_v2::LZ4HC;
-            parse_success = true;
-        }
-        if (!parse_success) {
+        } else {
             // Invalid compression type, use UNKNOWN_COMPRESSION (will fallback to table-level)
             _compression_type = segment_v2::UNKNOWN_COMPRESSION;
         }
