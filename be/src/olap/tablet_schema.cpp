@@ -19,6 +19,7 @@
 
 #include <gen_cpp/Descriptors_types.h>
 #include <gen_cpp/olap_file.pb.h>
+#include <gen_cpp/segment_v2.pb.h>
 #include <glog/logging.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream.h>
@@ -670,6 +671,41 @@ void TabletColumn::init_from_pb(const ColumnPB& column) {
     }
     if (column.has_pattern_type()) {
         _pattern_type = column.pattern_type();
+    }
+    // Parse column-level compression type
+    if (column.has_compression_type()) {
+        std::string compression_type_str = column.compression_type();
+        segment_v2::CompressionTypePB compression_type;
+        // Convert string to CompressionTypePB enum
+        bool parse_success = false;
+        if (compression_type_str == "NO_COMPRESSION" || compression_type_str == "NO_COMPRESSION") {
+            _compression_type = segment_v2::NO_COMPRESSION;
+            parse_success = true;
+        } else if (compression_type_str == "SNAPPY") {
+            _compression_type = segment_v2::SNAPPY;
+            parse_success = true;
+        } else if (compression_type_str == "LZ4") {
+            _compression_type = segment_v2::LZ4;
+            parse_success = true;
+        } else if (compression_type_str == "LZ4F") {
+            _compression_type = segment_v2::LZ4F;
+            parse_success = true;
+        } else if (compression_type_str == "ZLIB") {
+            _compression_type = segment_v2::ZLIB;
+            parse_success = true;
+        } else if (compression_type_str == "ZSTD") {
+            _compression_type = segment_v2::ZSTD;
+            parse_success = true;
+        } else if (compression_type_str == "LZ4HC") {
+            _compression_type = segment_v2::LZ4HC;
+            parse_success = true;
+        }
+        if (!parse_success) {
+            // Invalid compression type, use UNKNOWN_COMPRESSION (will fallback to table-level)
+            _compression_type = segment_v2::UNKNOWN_COMPRESSION;
+        }
+    } else {
+        _compression_type = segment_v2::UNKNOWN_COMPRESSION;
     }
 }
 

@@ -150,7 +150,12 @@ void SegmentWriter::init_column_meta(ColumnMetaPB* meta, uint32_t column_id,
     meta->set_type(int(column.type()));
     meta->set_length(column.length());
     meta->set_encoding(DEFAULT_ENCODING);
-    meta->set_compression(_opts.compression_type);
+    // Use column-level compression type if specified, otherwise use table-level compression type
+    segment_v2::CompressionTypePB compression = column.compression_type();
+    if (compression == segment_v2::UNKNOWN_COMPRESSION) {
+        compression = _opts.compression_type;
+    }
+    meta->set_compression(compression);
     meta->set_is_nullable(column.is_nullable());
     meta->set_default_value(column.default_value());
     meta->set_precision(column.precision());

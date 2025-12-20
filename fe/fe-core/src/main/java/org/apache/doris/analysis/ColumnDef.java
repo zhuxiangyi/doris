@@ -177,6 +177,7 @@ public class ColumnDef {
     private int clusterKeyId = -1;
     private Optional<GeneratedColumnInfo> generatedColumnInfo = Optional.empty();
     private Set<String> generatedColumnsThatReferToThis = new HashSet<>();
+    private String compressionType;
 
     public ColumnDef(String name, Type type) {
         this(name, type, false, null, ColumnNullableType.NOT_NULLABLE, DefaultValue.NOT_SET, "");
@@ -520,15 +521,30 @@ public class ColumnDef {
                 sb.append("DEFAULT ").append("NULL").append(" ");
             }
         }
+        if (compressionType != null && !compressionType.isEmpty()) {
+            sb.append("COMPRESSION \"").append(SqlUtils.escapeQuota(compressionType)).append("\" ");
+        }
         sb.append("COMMENT \"").append(SqlUtils.escapeQuota(comment)).append("\"");
 
         return sb.toString();
     }
 
     public Column toColumn() {
-        return new Column(name, this.type, isKey, aggregateType, isAllowNull, autoIncInitValue, defaultValue.value,
+        Column column = new Column(name, this.type, isKey, aggregateType, isAllowNull, autoIncInitValue, defaultValue.value,
             comment, visible, defaultValue.defaultValueExprDef, Column.COLUMN_UNIQUE_ID_INIT_VALUE,
             defaultValue.getValue(), clusterKeyId, generatedColumnInfo.orElse(null), generatedColumnsThatReferToThis);
+        if (compressionType != null) {
+            column.setCompressionType(compressionType);
+        }
+        return column;
+    }
+
+    public void setCompressionType(String compressionType) {
+        this.compressionType = compressionType;
+    }
+
+    public String getCompressionType() {
+        return compressionType;
     }
 
     @Override

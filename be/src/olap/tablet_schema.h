@@ -246,6 +246,12 @@ public:
 
     bool is_decimal() const { return _is_decimal; }
 
+    // Column-level compression type
+    segment_v2::CompressionTypePB compression_type() const { return _compression_type; }
+    void set_compression_type(segment_v2::CompressionTypePB compression_type) {
+        _compression_type = compression_type;
+    }
+
 private:
     int32_t _unique_id = -1;
     std::string _col_name;
@@ -294,6 +300,9 @@ private:
             BeConsts::DEFAULT_VARIANT_MAX_SPARSE_COLUMN_STATS_SIZE;
     // default to 0, no shard
     int32_t _variant_sparse_hash_shard_count = 0;
+
+    // Column-level compression type, UNKNOWN_COMPRESSION means use table-level compression
+    segment_v2::CompressionTypePB _compression_type = segment_v2::UNKNOWN_COMPRESSION;
 };
 
 bool operator==(const TabletColumn& a, const TabletColumn& b);

@@ -3986,6 +3986,19 @@ public class LogicalPlanBuilder extends DorisParserBaseVisitor<Object> {
         //comment should remove '\' and '(") at the beginning and end
         String comment = ctx.comment != null ? ctx.comment.getText().substring(1, ctx.comment.getText().length() - 1)
                 .replace("\\", "") : "";
+        // Parse compression type if specified
+        String compressionType = null;
+        if (ctx.compressionType != null) {
+            String compressionTypeStr = ctx.compressionType.getText();
+            // Remove quotes from string literal
+            if (compressionTypeStr.length() >= 2 && compressionTypeStr.startsWith("\"") && compressionTypeStr.endsWith("\"")) {
+                compressionType = compressionTypeStr.substring(1, compressionTypeStr.length() - 1);
+            } else if (compressionTypeStr.length() >= 2 && compressionTypeStr.startsWith("'") && compressionTypeStr.endsWith("'")) {
+                compressionType = compressionTypeStr.substring(1, compressionTypeStr.length() - 1);
+            } else {
+                compressionType = compressionTypeStr;
+            }
+        }
         long autoIncInitValue = -1;
         if (ctx.AUTO_INCREMENT() != null) {
             if (ctx.autoIncInitValue != null) {
@@ -4002,8 +4015,12 @@ public class LogicalPlanBuilder extends DorisParserBaseVisitor<Object> {
         Optional<GeneratedColumnDesc> desc = ctx.generatedExpr != null
                 ? Optional.of(new GeneratedColumnDesc(ctx.generatedExpr.getText(), getExpression(ctx.generatedExpr)))
                 : Optional.empty();
-        return new ColumnDefinition(colName, colType, isKey, aggType, nullableType, autoIncInitValue, defaultValue,
+        ColumnDefinition columnDefinition = new ColumnDefinition(colName, colType, isKey, aggType, nullableType, autoIncInitValue, defaultValue,
                 onUpdateDefaultValue, comment, desc);
+        if (compressionType != null && !compressionType.isEmpty()) {
+            columnDefinition.setCompressionType(compressionType);
+        }
+        return columnDefinition;
     }
 
     @Override

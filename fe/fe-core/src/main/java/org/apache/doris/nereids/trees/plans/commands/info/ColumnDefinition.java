@@ -73,6 +73,8 @@ public class ColumnDefinition {
     private Set<String> generatedColumnsThatReferToThis = new HashSet<>();
     // if add hidden column, must set enableAddHiddenColumn true
     private boolean enableAddHiddenColumn = false;
+    // column-level compression type
+    private String compressionType;
 
     public ColumnDefinition(String name, DataType type, boolean isKey, AggregateType aggType, boolean isNullable,
             Optional<DefaultValue> defaultValue, String comment) {
@@ -138,6 +140,7 @@ public class ColumnDefinition {
         this.comment = comment;
         this.isVisible = isVisible;
         this.generatedColumnDesc = generatedColumnDesc;
+        this.compressionType = null;
     }
 
     public ColumnDefinition(String name, DataType type, boolean isNullable) {
@@ -526,7 +529,18 @@ public class ColumnDefinition {
                         .orElse(null)
                 );
         column.setAggregationTypeImplicit(aggTypeImplicit);
+        if (compressionType != null && !compressionType.isEmpty()) {
+            column.setCompressionType(compressionType);
+        }
         return column;
+    }
+
+    public String getCompressionType() {
+        return compressionType;
+    }
+
+    public void setCompressionType(String compressionType) {
+        this.compressionType = compressionType;
     }
 
     /**

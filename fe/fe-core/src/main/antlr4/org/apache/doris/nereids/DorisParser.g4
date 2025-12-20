@@ -1460,6 +1460,7 @@ columnDef
         (DEFAULT (nullValue=NULL | SUBTRACT? INTEGER_VALUE | SUBTRACT? DECIMAL_VALUE | PI | E | BITMAP_EMPTY | stringValue=STRING_LITERAL
            | CURRENT_DATE | defaultTimestamp=CURRENT_TIMESTAMP (LEFT_PAREN defaultValuePrecision=number RIGHT_PAREN)?))?
         (ON UPDATE CURRENT_TIMESTAMP (LEFT_PAREN onUpdateValuePrecision=number RIGHT_PAREN)?)?
+        (COMPRESSION compressionType=STRING_LITERAL)?
         (COMMENT comment=STRING_LITERAL)?
     ;
 

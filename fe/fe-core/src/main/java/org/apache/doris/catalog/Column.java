@@ -162,6 +162,10 @@ public class Column implements GsonPostProcessable {
     @SerializedName(value = "sv")
     private Map<String, String> sessionVariables;
 
+    // column-level compression type
+    @SerializedName(value = "ct")
+    private String compressionType;
+
     public Column() {
         this.name = "";
         this.type = Type.NULL;
@@ -273,6 +277,7 @@ public class Column implements GsonPostProcessable {
             this.generatedColumnsThatReferToThis = new HashSet<>(generatedColumnsThatReferToThis);
         }
         this.sessionVariables = sessionVariables;
+        this.compressionType = null; // default to null, will use table-level compression
 
         if (type.isAggStateType()) {
             AggStateType aggState = (AggStateType) type;
@@ -333,6 +338,7 @@ public class Column implements GsonPostProcessable {
         this.clusterKeyId = column.getClusterKeyId();
         this.generatedColumnInfo = column.generatedColumnInfo;
         this.sessionVariables = column.sessionVariables;
+        this.compressionType = column.compressionType;
     }
 
     public void createChildrenColumn(Type type, Column column) {
@@ -862,6 +868,11 @@ public class Column implements GsonPostProcessable {
         }
         builder.setVisible(visible);
 
+        // Set column-level compression type if specified
+        if (StringUtils.isNotBlank(compressionType)) {
+            builder.setCompressionType(compressionType);
+        }
+
         if (this.type.isArrayType()) {
             Column child = this.getChildren().get(0);
             builder.addChildrenColumns(child.toPb(Sets.newHashSet(), Lists.newArrayList()));
@@ -1080,6 +1091,9 @@ public class Column implements GsonPostProcessable {
         }
         if (hasOnUpdateDefaultValue) {
             sb.append(" ON UPDATE ").append(defaultValue).append("");
+        }
+        if (StringUtils.isNotBlank(compressionType)) {
+            sb.append(" COMPRESSION \"").append(compressionType).append("\"");
         }
         if (StringUtils.isNotBlank(comment)) {
             sb.append(" COMMENT \"").append(getComment(true)).append("\"");
@@ -1327,5 +1341,13 @@ public class Column implements GsonPostProcessable {
 
     public void setSessionVariables(Map<String, String> sessionVariables) {
         this.sessionVariables = sessionVariables;
+    }
+
+    public String getCompressionType() {
+        return compressionType;
+    }
+
+    public void setCompressionType(String compressionType) {
+        this.compressionType = compressionType;
     }
 }
