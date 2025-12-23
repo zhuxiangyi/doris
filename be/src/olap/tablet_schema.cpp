@@ -675,6 +675,7 @@ void TabletColumn::init_from_pb(const ColumnPB& column) {
     // Parse column-level compression type
     if (column.has_compression_type()) {
         std::string compression_type_str = column.compression_type();
+        VLOG_DEBUG << "Column " << _col_name << " has compression_type from PB: " << compression_type_str;
         // Convert string to CompressionTypePB enum
         if (compression_type_str == "NO_COMPRESSION") {
             _compression_type = segment_v2::NO_COMPRESSION;
@@ -692,9 +693,12 @@ void TabletColumn::init_from_pb(const ColumnPB& column) {
             _compression_type = segment_v2::LZ4HC;
         } else {
             // Invalid compression type, use UNKNOWN_COMPRESSION (will fallback to table-level)
+            LOG(WARNING) << "Column " << _col_name << " has invalid compression_type: " << compression_type_str;
             _compression_type = segment_v2::UNKNOWN_COMPRESSION;
         }
+        VLOG_DEBUG << "Column " << _col_name << " compression_type set to: " << (int)_compression_type;
     } else {
+        VLOG_DEBUG << "Column " << _col_name << " has no compression_type, using UNKNOWN_COMPRESSION";
         _compression_type = segment_v2::UNKNOWN_COMPRESSION;
     }
 }

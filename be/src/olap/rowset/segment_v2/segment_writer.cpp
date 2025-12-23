@@ -152,10 +152,17 @@ void SegmentWriter::init_column_meta(ColumnMetaPB* meta, uint32_t column_id,
     meta->set_encoding(DEFAULT_ENCODING);
     // Use column-level compression type if specified, otherwise use table-level compression type
     segment_v2::CompressionTypePB compression = column.compression_type();
+    VLOG_DEBUG << "Column " << column.name() << " (id=" << column_id 
+               << ") compression_type from TabletColumn: " << (int)compression
+               << ", table-level compression: " << (int)_opts.compression_type;
     if (compression == segment_v2::UNKNOWN_COMPRESSION) {
         compression = _opts.compression_type;
+        VLOG_DEBUG << "Using table-level compression: " << (int)compression;
+    } else {
+        VLOG_DEBUG << "Using column-level compression: " << (int)compression;
     }
     meta->set_compression(compression);
+    VLOG_DEBUG << "ColumnMetaPB compression set to: " << (int)meta->compression();
     meta->set_is_nullable(column.is_nullable());
     meta->set_default_value(column.default_value());
     meta->set_precision(column.precision());
@@ -304,10 +311,16 @@ Status SegmentWriter::_create_column_writer(uint32_t cid, const TabletColumn& co
     opts.file_writer = _file_writer;
     // Use column-level compression type if specified, otherwise use table-level compression type
     segment_v2::CompressionTypePB compression = column.compression_type();
+    VLOG_DEBUG << "Creating ColumnWriter for column " << column.name() 
+               << " (id=" << cid << "), compression_type: " << (int)compression;
     if (compression == segment_v2::UNKNOWN_COMPRESSION) {
         compression = _opts.compression_type;
+        VLOG_DEBUG << "Falling back to table-level compression: " << (int)compression;
+    } else {
+        VLOG_DEBUG << "Using column-level compression: " << (int)compression;
     }
     opts.compression_type = compression;
+    VLOG_DEBUG << "ColumnWriterOptions compression_type set to: " << (int)opts.compression_type;
     opts.footer = &_footer;
     if (_opts.rowset_ctx != nullptr) {
         opts.input_rs_readers = _opts.rowset_ctx->input_rs_readers;
