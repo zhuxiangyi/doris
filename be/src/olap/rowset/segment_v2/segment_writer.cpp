@@ -302,7 +302,12 @@ Status SegmentWriter::_create_column_writer(uint32_t cid, const TabletColumn& co
 
     opts.rowset_ctx = _opts.rowset_ctx;
     opts.file_writer = _file_writer;
-    opts.compression_type = _opts.compression_type;
+    // Use column-level compression type if specified, otherwise use table-level compression type
+    segment_v2::CompressionTypePB compression = column.compression_type();
+    if (compression == segment_v2::UNKNOWN_COMPRESSION) {
+        compression = _opts.compression_type;
+    }
+    opts.compression_type = compression;
     opts.footer = &_footer;
     if (_opts.rowset_ctx != nullptr) {
         opts.input_rs_readers = _opts.rowset_ctx->input_rs_readers;

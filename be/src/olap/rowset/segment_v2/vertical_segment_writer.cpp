@@ -159,7 +159,12 @@ void VerticalSegmentWriter::_init_column_meta(ColumnMetaPB* meta, uint32_t colum
     meta->set_type(int(column.type()));
     meta->set_length(cast_set<int32_t>(column.length()));
     meta->set_encoding(DEFAULT_ENCODING);
-    meta->set_compression(_opts.compression_type);
+    // Use column-level compression type if specified, otherwise use table-level compression type
+    segment_v2::CompressionTypePB compression = column.compression_type();
+    if (compression == segment_v2::UNKNOWN_COMPRESSION) {
+        compression = _opts.compression_type;
+    }
+    meta->set_compression(compression);
     meta->set_is_nullable(column.is_nullable());
     meta->set_default_value(column.default_value());
     meta->set_precision(column.precision());
@@ -299,7 +304,12 @@ Status VerticalSegmentWriter::_create_column_writer(uint32_t cid, const TabletCo
 
     opts.rowset_ctx = _opts.rowset_ctx;
     opts.file_writer = _file_writer;
-    opts.compression_type = _opts.compression_type;
+    // Use column-level compression type if specified, otherwise use table-level compression type
+    segment_v2::CompressionTypePB compression = column.compression_type();
+    if (compression == segment_v2::UNKNOWN_COMPRESSION) {
+        compression = _opts.compression_type;
+    }
+    opts.compression_type = compression;
     opts.footer = &_footer;
     opts.input_rs_readers = _opts.rowset_ctx->input_rs_readers;
 

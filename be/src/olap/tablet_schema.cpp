@@ -759,6 +759,40 @@ void TabletColumn::to_schema_pb(ColumnPB* column) const {
         _sub_columns[i]->to_schema_pb(child);
     }
 
+    // Set column-level compression type
+    if (_compression_type != segment_v2::UNKNOWN_COMPRESSION) {
+        std::string compression_type_str;
+        switch (_compression_type) {
+        case segment_v2::NO_COMPRESSION:
+            compression_type_str = "NO_COMPRESSION";
+            break;
+        case segment_v2::SNAPPY:
+            compression_type_str = "SNAPPY";
+            break;
+        case segment_v2::LZ4:
+            compression_type_str = "LZ4";
+            break;
+        case segment_v2::LZ4F:
+            compression_type_str = "LZ4F";
+            break;
+        case segment_v2::ZLIB:
+            compression_type_str = "ZLIB";
+            break;
+        case segment_v2::ZSTD:
+            compression_type_str = "ZSTD";
+            break;
+        case segment_v2::LZ4HC:
+            compression_type_str = "LZ4HC";
+            break;
+        default:
+            // Unknown compression type, don't set it
+            break;
+        }
+        if (!compression_type_str.empty()) {
+            column->set_compression_type(compression_type_str);
+        }
+    }
+
     // set parts info
     if (has_path_info()) {
         // CHECK_GT(_parent_col_unique_id, 0);
