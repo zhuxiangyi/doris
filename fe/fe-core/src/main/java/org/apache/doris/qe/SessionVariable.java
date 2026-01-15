@@ -649,6 +649,10 @@ public class SessionVariable implements Serializable, Writable {
     public static final String SPILL_HASH_JOIN_PARTITION_COUNT = "spill_hash_join_partition_count";
     public static final String SPILL_REVOCABLE_MEMORY_HIGH_WATERMARK_PERCENT =
             "spill_revocable_memory_high_watermark_percent";
+    public static final String ENABLE_SPILL_TO_OBJECT_STORAGE = "enable_spill_to_object_storage";
+    public static final String SPILL_OBJECT_STORAGE_VAULT_ID = "spill_object_storage_vault_id";
+    public static final String SPILL_PREFER_OBJECT_STORAGE = "spill_prefer_object_storage";
+            "spill_revocable_memory_high_watermark_percent";
     public static final String DATA_QUEUE_MAX_BLOCKS = "data_queue_max_blocks";
     public static final String LOW_MEMORY_MODE_BUFFER_LIMIT = "low_memory_mode_buffer_limit";
     public static final String DUMP_HEAP_PROFILE_WHEN_MEM_LIMIT_EXCEEDED = "dump_heap_profile_when_mem_limit_exceeded";
@@ -2988,6 +2992,29 @@ public class SessionVariable implements Serializable, Writable {
 
     @VariableMgr.VarAttr(name = SPILL_REVOCABLE_MEMORY_HIGH_WATERMARK_PERCENT, fuzzy = true)
     public int spillRevocableMemoryHighWatermarkPercent = -1;
+
+    @VariableMgr.VarAttr(
+            name = ENABLE_SPILL_TO_OBJECT_STORAGE,
+            description = {"控制是否启用 spill 到对象存储（S3/OSS/HDFS）。默认为 false。",
+                    "Controls whether to enable spill to object storage (S3/OSS/HDFS). "
+                            + "The default value is false."},
+            needForward = true, fuzzy = true)
+    public boolean enableSpillToObjectStorage = false;
+
+    @VariableMgr.VarAttr(
+            name = SPILL_OBJECT_STORAGE_VAULT_ID,
+            description = {"指定 spill 使用的 Storage Vault ID。为空则使用默认 vault。",
+                    "Specify the Storage Vault ID for spill. Empty means use default vault."},
+            needForward = true, fuzzy = true)
+    public String spillObjectStorageVaultId = "";
+
+    @VariableMgr.VarAttr(
+            name = SPILL_PREFER_OBJECT_STORAGE,
+            description = {"当同时启用本地磁盘和对象存储时，是否优先使用对象存储。默认为 true。",
+                    "When both local disk and object storage are enabled, whether to prefer object storage. "
+                            + "The default value is true."},
+            needForward = true, fuzzy = true)
+    public boolean spillPreferObjectStorage = true;
 
     @VariableMgr.VarAttr(
             name = DUMP_HEAP_PROFILE_WHEN_MEM_LIMIT_EXCEEDED,

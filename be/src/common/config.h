@@ -1483,6 +1483,12 @@ DECLARE_mInt32(spill_gc_interval_ms);
 DECLARE_mInt32(spill_gc_work_time_ms);
 DECLARE_Int64(spill_in_paused_queue_timeout_ms);
 DECLARE_Int64(wait_cancel_release_memory_ms);
+// Whether to enable spill to object storage (S3/OSS/HDFS)
+DECLARE_Bool(enable_spill_to_object_storage);
+// Storage Vault ID for spill to object storage, empty means use default vault
+DECLARE_String(spill_object_storage_vault_id);
+// Priority: object storage > local disk when both are enabled
+DECLARE_Bool(spill_prefer_object_storage);
 
 DECLARE_mBool(check_segment_when_build_rowset_meta);
 

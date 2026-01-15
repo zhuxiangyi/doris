@@ -1399,6 +1399,13 @@ DEFINE_mInt32(spill_gc_work_time_ms, "2000"); // 2s
 // paused query in queue timeout(ms) will be resumed or canceled
 DEFINE_Int64(spill_in_paused_queue_timeout_ms, "60000");
 
+// Whether to enable spill to object storage
+DEFINE_Bool(enable_spill_to_object_storage, "false");
+// Storage Vault ID for spill to object storage, empty means use default vault
+DEFINE_String(spill_object_storage_vault_id, "");
+// Priority: object storage > local disk when both are enabled
+DEFINE_Bool(spill_prefer_object_storage, "true");
+
 DEFINE_Int64(wait_cancel_release_memory_ms, "5000");
 
 DEFINE_mBool(check_segment_when_build_rowset_meta, "false");
