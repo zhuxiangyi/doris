@@ -652,7 +652,6 @@ public class SessionVariable implements Serializable, Writable {
     public static final String ENABLE_SPILL_TO_OBJECT_STORAGE = "enable_spill_to_object_storage";
     public static final String SPILL_OBJECT_STORAGE_VAULT_ID = "spill_object_storage_vault_id";
     public static final String SPILL_PREFER_OBJECT_STORAGE = "spill_prefer_object_storage";
-            "spill_revocable_memory_high_watermark_percent";
     public static final String DATA_QUEUE_MAX_BLOCKS = "data_queue_max_blocks";
     public static final String LOW_MEMORY_MODE_BUFFER_LIMIT = "low_memory_mode_buffer_limit";
     public static final String DUMP_HEAP_PROFILE_WHEN_MEM_LIMIT_EXCEEDED = "dump_heap_profile_when_mem_limit_exceeded";
