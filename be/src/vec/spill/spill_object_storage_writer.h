@@ -36,10 +36,10 @@ public:
     SpillObjectStorageWriter(std::shared_ptr<ResourceContext> resource_context,
                              RuntimeProfile* profile, int64_t id, size_t batch_size,
                              StorageResource storage_resource, const std::string& remote_path)
-            : storage_resource_(std::move(storage_resource)),
-              stream_id_(id),
+            : stream_id_(id),
               batch_size_(batch_size),
               remote_path_(remote_path),
+              storage_resource_(std::move(storage_resource)),
               _resource_ctx(std::move(resource_context)) {
         RuntimeProfile* common_profile = profile->get_child("CommonCounters");
         DCHECK(common_profile != nullptr);
